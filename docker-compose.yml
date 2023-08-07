@@ -1,0 +1,103 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: web-scrapper-nginx
+    restart: unless-stopped
+    ports:
+      - 8070:80
+      - 4431:443
+    volumes:
+      - ./:/var/www/html:cached
+      - ./.docker/nginx:/etc/nginx/conf.d
+      - ./.docker/nginx/ssl:/etc/nginx/conf.d/ssl
+    networks:
+      - web-scrapper-network
+    depends_on:
+      - app
+      - phpmyadmin
+
+  app:
+    build:
+      context: ./.docker/app
+      dockerfile: Dockerfile
+    container_name: web-scrapper-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:cached
+      - ./.docker/app/php-fpm.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ~/.ssh:/root/.ssh
+    networks:
+      - web-scrapper-network
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:8.0.23
+    container_name: web-scrapper-mysql-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: web_scrapper
+      SERVICE_TAGS: dev
+      SERVICE_NAME: db
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_AUTHENTICATION_PLUGIN: 'mysql_native_password'
+    volumes:
+      - web-scrapper-volume:/var/lib/mysql
+    networks:
+      - web-scrapper-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: web-scrapper-phpmyadmin
+    ports:
+      - "8080:80"   # Map port 8080 on the host to port 80 on the container
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: 123
+    depends_on:
+      - db
+    networks:
+      - web-scrapper-network
+
+  redis:
+    image: redis:alpine
+    container_name: web-scrapper-redis
+    volumes:
+      - web-scrapper-volume:/data
+    networks:
+      - web-scrapper-network
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+networks:
+  web-scrapper-network:
+    driver: bridge
+
+volumes:
+  web-scrapper-volume:
+    driver: local
+
+
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
