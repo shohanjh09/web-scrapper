@@ -22,6 +22,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Service\ApiService:
+    App\Service\ScrappingService:
         arguments:
-            $proxyToken: '%env(SCRAPING_PROXY_TOKEN)%'
+            $scrappingBaseUrl: '%env(SCRAPPING_BASE_URL)%'
+            $scrappingPuppeterUrl: '%env(SCRAPPING_PUPPETER_URL)%'
+            $proxyToken: '%env(SCRAPPING_PROXY_TOKEN)%'
