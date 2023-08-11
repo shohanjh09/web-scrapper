@@ -75,23 +75,6 @@ services:
     networks:
       - web-scrapper-network
 
-
-  puppeteer:
-    build:
-      context: ./.docker/puppeteer
-      dockerfile: Dockerfile
-    container_name: web-scrapper-puppeteer
-    restart: unless-stopped
-    working_dir: /app
-    volumes:
-      - ./puppeteer/scripts:/app
-    ports:
-      - "3000:3000"
-    depends_on:
-      - app
-    networks:
-      - web-scrapper-network
-
 networks:
   web-scrapper-network:
     driver: bridge
