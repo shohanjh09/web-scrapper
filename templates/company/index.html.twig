@@ -1,0 +1,44 @@
+{% extends 'company/base.html.twig' %}
+
+{% block title %}Company index{% endblock %}
+
+{% block body %}
+    <h1>Company index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Company_name</th>
+                <th>Registration_code</th>
+                <th>Vat</th>
+                <th>Address</th>
+                <th>Mobile_phone</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for company in companies %}
+            <tr>
+                <td>{{ company.id }}</td>
+                <td>{{ company.companyName }}</td>
+                <td>{{ company.registrationCode }}</td>
+                <td>{{ company.vat }}</td>
+                <td>{{ company.address }}</td>
+                <td>{{ company.mobilePhone }}</td>
+                <td>
+                    <a href="{{ path('app_company_show', {'id': company.id}) }}">show</a>
+                    <a href="{{ path('app_company_edit', {'id': company.id}) }}">edit</a>
+                    {{ include('company/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_company_new') }}">Create new</a>
+{% endblock %}

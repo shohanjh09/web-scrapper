@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Add your other head elements here -->
+    {% block title %}Company index{% endblock %}
+    <!-- Include Bootstrap CSS -->
+    {% block stylesheets %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% endblock %}
+</head>
+<body>
+<!-- Add your navigation and header here -->
+
+<!-- Render the content block -->
+<div class="container">
+    {% block body %}
+    {% endblock %}
+</div>
+<!-- ... Your footer content ... -->
+
+<!-- Include your default JavaScript libraries -->
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+{% endblock %}
+
+<!-- Include additional custom JavaScript -->
+{% block customJavascript %}
+    <!-- Your custom JavaScript code goes here -->
+{% endblock %}
+
+</body>
+</html>

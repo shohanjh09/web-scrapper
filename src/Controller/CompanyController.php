@@ -2,77 +2,80 @@
 
 namespace App\Controller;
 
-use App\Service\CompanyService;
-use App\Service\ScrappingService;
+use App\Entity\Company;
+use App\Form\CompanyType;
+use App\Repository\CompanyRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
+#[Route('/company')]
 class CompanyController extends AbstractController
 {
-    CONST WEB_URL = "https://rekvizitai.vz.lt/en";
-
-    #[Route('/', name: 'home')]
-    public function index(CompanyService $companyService)
+    #[Route('/', name: 'app_company_index', methods: ['GET'])]
+    public function index(CompanyRepository $companyRepository): Response
     {
-        $companies = $companyService->findCompanyAll();
-
-        return $this->render('search/index.html.twig', [
-            'companies' => $companies
+        return $this->render('company/index.html.twig', [
+            'companies' => $companyRepository->findAll(),
         ]);
     }
 
-    #[Route('/search', name: 'search')]
-    public function search(Request $request, CompanyService $companyService, ScrappingService $scrappingService)
+    #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Assuming you have some criteria to search for a company
-        $registrationCode = $request->get('registration_code');
+        $company = new Company();
+        $form = $this->createForm(CompanyType::class, $company);
+        $form->handleRequest($request);
 
-        $criteria = [
-            'registration_code' => $registrationCode, // Example registration code
-        ];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($company);
+            $entityManager->flush();
 
-        // Try to fetch company data from the database
-        $company = $companyService->findCompanyByCriteria($criteria);
-
-        if (!$company) {
-            // If company data is not found in the database, perform scraping
-            $url = self::WEB_URL . "/company-search/1/";
-
-            $data = [
-                'code' => $registrationCode,
-                'order' => '1',
-                'resetFilter' => '0',
-            ];
-
-            $scrapedData = $scrappingService->searchCompany($url, $data);
-
-            // Save the scraped data to the database using the CompanyService
-            $company = $companyService->createCompanyWithTurnover($scrapedData);
-
-            // Return the response with the scraped and saved data
-            return new JsonResponse(['message' => 'Company data scraped and saved successfully.', 'data' => $company]);
+            return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        // If company data is found in the database, return the response
-        return new JsonResponse(['message' => 'Company data found in the database.', 'data' => $company]);
+        return $this->render('company/new.html.twig', [
+            'company' => $company,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/company/{id}/turnover', name: 'company_turnover', methods: ['GET'])]
-    public function getCompanyTurnover(Request $request, SerializerInterface $serializer, CompanyService $companyService, int $id): JsonResponse
+    #[Route('/{id}', name: 'app_company_show', methods: ['GET'])]
+    public function show(Company $company): Response
     {
-        $company = $companyService->findCompanyById($id);
+        return $this->render('company/show.html.twig', [
+            'company' => $company,
+        ]);
+    }
 
-        if (!$company) {
-            return new JsonResponse(['error' => 'Company not found'], JsonResponse::HTTP_NOT_FOUND);
+    #[Route('/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(CompanyType::class, $company);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $companyTurnover = $company->getSerializedTurnover();
-
-        return new JsonResponse(['turnover' => $companyTurnover]);
+        return $this->render('company/edit.html.twig', [
+            'company' => $company,
+            'form' => $form,
+        ]);
     }
 
+    #[Route('/{id}', name: 'app_company_delete', methods: ['POST'])]
+    public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($company);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
+    }
 }
