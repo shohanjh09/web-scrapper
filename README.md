@@ -1,10 +1,17 @@
 # Company Search Web Application (Scrapping)
 
-A web application for searching, scrapping and managing company information.
+A web application for searching, scrapping, and managing company information.
+
+## Table of Contents
+- [Functional Descriptions](#functional-descriptions)
+- [Technologies Used](#technologies-used)
+- [Setup Guide](#setup-guide)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Functional Descriptions
 
-- **Company Search:** Allows users to search for company information using the company's registration code.Fistly it try to find in datbase otehrwise it finds scrapping data from the following URL: https://rekvizitai.vz.lt
+- **Company Search:** Allows users to search for company information using the company's registration code. Firstly, it tries to find in the database; otherwise, it scrapes data from the following URL: https://rekvizitai.vz.lt
 - **Company Display:** Displays detailed information about a company, including name, registration code, VAT, address, and more.
 - **Company Creation:** Users can create new company records by entering the required details.
 - **Company Editing:** Users can edit existing company records to update their information.
@@ -24,7 +31,7 @@ A web application for searching, scrapping and managing company information.
 
 To get the project up and running on your local machine, follow these steps:
 
-1. Clone the repo and `cd` into it
+1. Clone the repo and `cd` into it:
 ```bash
 git clone https://github.com/shohanjh09/web-scrapper.git
 cd web-scrapper
