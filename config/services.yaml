@@ -27,3 +27,8 @@ services:
             $scrappingBaseUrl: '%env(SCRAPPING_BASE_URL)%'
             $scrappingPuppeterUrl: '%env(SCRAPPING_PUPPETER_URL)%'
             $proxyToken: '%env(SCRAPPING_PROXY_TOKEN)%'
+
+    App\Service\CompanyService:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $companyRepository: '@App\Repository\CompanyRepository'

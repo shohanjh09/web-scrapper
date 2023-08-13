@@ -10,7 +10,7 @@ class ScrappingService
 {
     use PuppeterApiRequestTrait;
 
-    const MOBILE_KEYS = ['mobile-phone', 'phone'];
+    const MOBILE_KEYS = ['mobile_phone', 'phone'];
 
     const IMG_DIR = "images/";
 
@@ -140,12 +140,10 @@ class ScrappingService
             $key = $this->keyGenerator($row->filter('.name')->text());
 
             if ($isMobile && in_array($key, self::MOBILE_KEYS)) {
-                $value = $this->extractMobileValue($row);
+                $scrapedData[self::MOBILE_KEYS[0]] = $this->extractMobileValue($row);
             } else {
-                $value = $row->filter('.value')->text();
+                $scrapedData[$key] = $row->filter('.value')->text();
             }
-
-            $scrapedData[$key] = $value;
         });
     }
 
@@ -214,6 +212,6 @@ class ScrappingService
      * @return string
      */
     private function keyGenerator($name){
-        return trim(strtolower(str_replace(['(', ')', ' '], ['', '', '_'], $name)));
+        return trim(strtolower(str_replace(['(', ')', ' ', '-'], ['', '', '_', '_'], $name)));
     }
 }

@@ -31,7 +31,7 @@ class Company
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mobile_phone = null;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyTurnover::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyTurnover::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $company_turnover;
 
     public function __construct()
