@@ -1,0 +1,60 @@
+/* public/css/style.css */
+
+.navbar-custom {
+    background-color: #343a40; /* Navbar background color */
+}
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+    color: #ffffff; /* Link text color */
+}
+.navbar-custom .navbar-toggler-icon {
+    background-color: #ffffff; /* Toggler icon color */
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+    display: inline-block;
+}
+
+.pagination .page-item.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.pagination .page-item a,
+.pagination .page-item span {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-item.active a,
+.pagination .page-item.active span {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.pagination .page-item a:hover,
+.pagination .page-item span:hover {
+    background-color: #f0f0f0;
+    color: #333;
+    border-color: #ccc;
+}
+
+.custom-button-group {
+    display: flex;
+    align-items: center;
+}
+.custom-button-group .btn {
+    margin-right: 10px;
+}

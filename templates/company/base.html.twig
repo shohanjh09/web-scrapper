@@ -2,14 +2,28 @@
 <html>
 <head>
     <!-- Add your other head elements here -->
-    {% block title %}Company index{% endblock %}
+    <title>{% block title %}Company index{% endblock %}</title>
     <!-- Include Bootstrap CSS -->
     {% block stylesheets %}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     {% endblock %}
 </head>
 <body>
-<!-- Add your navigation and header here -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <a class="navbar-brand{% if app.request.attributes.get('_route') == 'app_company_index' %} btn btn-primary{% else %} btn btn-link{% endif %}" href="{{ path('app_company_index') }}">Home</a>
+            <a class="navbar-brand{% if app.request.attributes.get('_route') == 'app_company_new' %} btn btn-primary{% else %} btn btn-link{% endif %}" href="{{ path('app_company_new') }}">Company Search</a>
+        </div>
+    </div>
+</nav>
+
+
+
+
+
 
 <!-- Render the content block -->
 <div class="container">
