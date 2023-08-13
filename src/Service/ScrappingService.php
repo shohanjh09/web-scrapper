@@ -74,6 +74,7 @@ class ScrappingService
 
         $scrapedData = [];
 
+        $this->extractCompanyName($crawler, $scrapedData);
         $this->extractDataFromTable($crawler, '.information', $scrapedData);
         $this->extractDataFromTable($crawler, '.details-block__2', $scrapedData, true);
 
@@ -104,7 +105,7 @@ class ScrappingService
             $columnCount = $columns->count();
 
             if ($columnCount >= 2) {
-                $key = trim($columns->eq(0)->text());
+                $key = $this->keyGenerator(trim($columns->eq(0)->text()));
 
                 for ($i = 1; $i < $columnCount; $i++) {
                     $value = trim($columns->eq($i)->text());
@@ -114,6 +115,12 @@ class ScrappingService
         });
 
         return $turnoverData;
+    }
+
+    private function extractCompanyName(Crawler $crawler, array &$scrapedData)
+    {
+        $companyName = $crawler->filter('.top-title h2')->text();
+        $scrapedData['company_name'] = trim(str_replace('Company', '', $companyName));
     }
 
     /**
@@ -207,6 +214,6 @@ class ScrappingService
      * @return string
      */
     private function keyGenerator($name){
-        return trim(str_replace(' ', '-', strtolower($name)));
+        return trim(strtolower(str_replace(['(', ')', ' '], ['', '', '_'], $name)));
     }
 }
