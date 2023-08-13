@@ -4,6 +4,14 @@
 
 {% block body %}
     <h1>Company index</h1>
+    <div class="row mb-3">
+        <div class="col">
+            {{ form_start(filterForm, {'attr': {'class': 'form-inline'}}) }}
+            {{ form_row(filterForm.search, {'attr': {'class': 'form-control mr-2'}}) }}
+            {{ form_row(filterForm.filter, {'label': 'Filter', 'attr': {'class': 'btn btn-primary'}}) }}
+            {{ form_end(filterForm) }}
+        </div>
+    </div>
 
     <table class="table">
         <thead>
@@ -18,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for company in companies %}
+        {% for company in pagination %}
             <tr>
                 <td>{{ company.id }}</td>
                 <td>{{ company.companyName }}</td>
@@ -41,4 +49,7 @@
     </table>
 
     <a href="{{ path('app_company_new') }}">Create new</a>
+
+    {# Render pagination controls #}
+    {{ knp_pagination_render(pagination) }}
 {% endblock %}

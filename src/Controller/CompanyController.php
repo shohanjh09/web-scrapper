@@ -10,15 +10,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
+use App\Form\CompanyFilterType;
 
 #[Route('/company')]
 class CompanyController extends AbstractController
 {
-    #[Route('/', name: 'app_company_index', methods: ['GET'])]
-    public function index(CompanyRepository $companyRepository): Response
+    #[Route('/', name: 'app_company_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
+        $filterForm = $this->createForm(CompanyFilterType::class);
+        $filterForm->handleRequest($request);
+
+        $queryBuilder = $companyRepository->createQueryBuilder('c');
+
+        // Apply filters if the form is submitted
+        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
+            $data = $filterForm->getData();
+            if ($data['search']) {
+                $queryBuilder
+                    ->andWhere('c.company_name LIKE :search OR c.registration_code LIKE :search')
+                    ->setParameter('search', '%' . $data['search'] . '%');
+            }
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            1 // Items per page
+        );
+
         return $this->render('company/index.html.twig', [
-            'companies' => $companyRepository->findAll(),
+            'pagination' => $pagination,
+            'filterForm' => $filterForm->createView(),
         ]);
     }
 

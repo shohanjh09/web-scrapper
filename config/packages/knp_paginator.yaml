@@ -1,0 +1,7 @@
+knp_paginator:
+  page_range: 5          # Number of pages displayed in the pagination bar
+  default_options:
+    page_name: page    # Name of the page parameter in the pagination query string
+    sort_field_name: sort
+    sort_direction_name: direction
+    distinct: true      # Only show distinct results in pagination
