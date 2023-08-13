@@ -18,9 +18,9 @@ class CompanyService
         $this->companyRepository = $companyRepository;
     }
 
-    public function findCompanyByCriteria(array $criteria): ?Company
+    public function findCompanyByCriteria(array $criteria): array
     {
-        return $this->companyRepository->findOneBy($criteria);
+        return $this->companyRepository->findBy($criteria);
     }
 
     public function findCompanyAll(): array

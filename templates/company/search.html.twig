@@ -1,0 +1,36 @@
+{% extends 'company/base.html.twig' %}
+
+{% block title %}Company Search{% endblock %}
+
+{% block body %}
+    <div class="mt-5 container">
+        <div class="container text-center">
+            <h1 class="mb-4">Company Search (Scrapping)</h1>
+        </div>
+
+        <form action="{{ path('company_search') }}" method="get" class="mt-4">
+            <div class="input-group mb-3">
+                <input type="text" name="registration_code" class="form-control" placeholder="Enter Registration Code for Scrapping">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="row mb-3">
+            <div class="col">
+                <a href="{{ path('company_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New
+                </a>
+            </div>
+        </div>
+        {{ include('company/include/_company_list.html.twig', {'pagination': pagination}) }}
+        {{ include('company/include/_turnover_modal.html.twig') }}
+    </div>
+{% endblock %}
+
+
+
+{% block customJavascript %}
+    <script src="{{ asset('js/custom.js') }}"></script>
+{% endblock %}

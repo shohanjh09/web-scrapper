@@ -5,18 +5,20 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
+use App\Service\CompanyService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Form\CompanyFilterType;
+use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/company')]
 class CompanyController extends AbstractController
 {
-    #[Route('/', name: 'app_company_index', methods: ['GET', 'POST'])]
+    #[Route('/', name: 'company_index', methods: ['GET', 'POST'])]
     public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
         $filterForm = $this->createForm(CompanyFilterType::class);
@@ -46,7 +48,7 @@ class CompanyController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'company_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $company = new Company();
@@ -57,7 +59,7 @@ class CompanyController extends AbstractController
             $entityManager->persist($company);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('company_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('company/new.html.twig', [
@@ -66,15 +68,7 @@ class CompanyController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_company_show', methods: ['GET'])]
-    public function show(Company $company): Response
-    {
-        return $this->render('company/show.html.twig', [
-            'company' => $company,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'company_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CompanyType::class, $company);
@@ -83,7 +77,7 @@ class CompanyController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('company_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('company/edit.html.twig', [
@@ -92,7 +86,7 @@ class CompanyController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_company_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'company_delete', methods: ['POST'])]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
@@ -100,6 +94,20 @@ class CompanyController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_company_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('company_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/company/{id}/turnover', name: 'company_turnover', methods: ['GET'])]
+    public function getCompanyTurnover(Request $request, SerializerInterface $serializer, CompanyService $companyService, int $id): JsonResponse
+    {
+        $company = $companyService->findCompanyById($id);
+
+        if (!$company) {
+            return new JsonResponse(['error' => 'Company not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $companyTurnover = $company->getSerializedTurnover();
+
+        return new JsonResponse(['turnover' => $companyTurnover]);
     }
 }
