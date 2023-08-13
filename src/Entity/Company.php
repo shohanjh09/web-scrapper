@@ -133,4 +133,31 @@ class Company
 
         return $this;
     }
+
+    /**
+     * Get serialized turnover data
+     *
+     * @return array
+     */
+    public function getSerializedTurnover(): array
+    {
+        $serializedTurnover = [];
+
+        foreach ($this->company_turnover as $turnover) {
+            $serializedTurnover[] = [
+                'year'                                  => $turnover->getYear(),
+                'non_current_assets'                    => $turnover->getNonCurrentAssets(),
+                'current_assets'                        => $turnover->getCurrentAssets(),
+                'equity_capital'                        => $turnover->getEquityCapital(),
+                'amounts_payable_and_other_liabilities' => $turnover->getAmountsPayableAndOtherLiabilities(),
+                'sales_revenue'                         => $turnover->getSalesRevenue(),
+                'profit_loss_before_taxes'              => $turnover->getProfitLossBeforeTaxes(),
+                'profit_before_taxes_margin'            => $turnover->getProfitBeforeTaxesMargin(),
+                'net_profit_loss'                       => $turnover->getNetProfitLoss(),
+                'net_profit_margin'                     => $turnover->getNetProfitMargin()
+            ];
+        }
+
+        return $serializedTurnover;
+    }
 }

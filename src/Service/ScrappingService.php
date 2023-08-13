@@ -157,11 +157,11 @@ class ScrappingService
     private function extractMobileValue(Crawler $row)
     {
         $imageUrl = $row->filter('.value img')->attr('src');
-        $value = basename($imageUrl);
+        $imageName = str_replace('%', '', basename($imageUrl));
 
-        $this->saveImage($value, $this->scrappingBaseUrl . $imageUrl);
+        $this->saveImage($imageName, $this->scrappingBaseUrl . $imageUrl);
 
-        return $value;
+        return $imageName;
     }
 
 

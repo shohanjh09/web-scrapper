@@ -6,43 +6,33 @@ use App\Service\CompanyService;
 use App\Service\ScrappingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 class CompanyController extends AbstractController
 {
     CONST WEB_URL = "https://rekvizitai.vz.lt/en";
 
-    //TODO:: clean the code later
-//    #[Route('/search', name: 'app_search')]
-//    public function index(): Response
-//    {
-//        return $this->render('search/index.html.twig', [
-//            'controller_name' => 'CompanyController',
-//        ]);
-//    }
+    #[Route('/', name: 'home')]
+    public function index(CompanyService $companyService)
+    {
+        $companies = $companyService->findCompanyAll();
 
-    //https://localhost/search
-//    #[Route('/search', name: 'search')]
-//    public function search(ScrappingService $scrappingService)
-//    {
-//        $url = self::WEB_URL."/company-search/1/";
-//
-//        $data = array(
-//            'code' => '305454344',
-//            'order' => '1',
-//            'resetFilter' => '0'
-//        );
-//        $response = $scrappingService->searchCompany($url, $data);
-//
-//        return new JsonResponse($response);
-//    }
+        return $this->render('search/index.html.twig', [
+            'companies' => $companies
+        ]);
+    }
 
     #[Route('/search', name: 'search')]
-    public function search(CompanyService $companyService, ScrappingService $scrappingService)
+    public function search(Request $request, CompanyService $companyService, ScrappingService $scrappingService)
     {
         // Assuming you have some criteria to search for a company
+        $registrationCode = $request->get('registration_code');
+
         $criteria = [
-            'registration_code' => '305454344', // Example registration code
+            'registration_code' => $registrationCode, // Example registration code
         ];
 
         // Try to fetch company data from the database
@@ -53,7 +43,7 @@ class CompanyController extends AbstractController
             $url = self::WEB_URL . "/company-search/1/";
 
             $data = [
-                'code' => '305454344',
+                'code' => $registrationCode,
                 'order' => '1',
                 'resetFilter' => '0',
             ];
@@ -70,4 +60,19 @@ class CompanyController extends AbstractController
         // If company data is found in the database, return the response
         return new JsonResponse(['message' => 'Company data found in the database.', 'data' => $company]);
     }
+
+    #[Route('/company/{id}/turnover', name: 'company_turnover', methods: ['GET'])]
+    public function getCompanyTurnover(Request $request, SerializerInterface $serializer, CompanyService $companyService, int $id): JsonResponse
+    {
+        $company = $companyService->findCompanyById($id);
+
+        if (!$company) {
+            return new JsonResponse(['error' => 'Company not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $companyTurnover = $company->getSerializedTurnover();
+
+        return new JsonResponse(['turnover' => $companyTurnover]);
+    }
+
 }

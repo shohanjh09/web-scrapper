@@ -23,6 +23,16 @@ class CompanyService
         return $this->companyRepository->findOneBy($criteria);
     }
 
+    public function findCompanyAll(): array
+    {
+        return $this->companyRepository->findAll();
+    }
+
+    public function findCompanyById($id)
+    {
+        return $this->companyRepository->find($id);
+    }
+
     public function createCompanyWithTurnover(array $data): Company
     {
         // Create a new Company entity and set its properties
