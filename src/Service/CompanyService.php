@@ -20,12 +20,12 @@ class CompanyService
 
     public function findCompanyByCriteria(array $criteria): array
     {
-        return $this->companyRepository->findBy($criteria);
+        return $this->companyRepository->findBy($criteria, ['id' => 'DESC']);
     }
 
     public function findCompanyAll(): array
     {
-        return $this->companyRepository->findAll();
+        return $this->companyRepository->findBy([], ['id' => 'DESC']);
     }
 
     public function findCompanyById($id)

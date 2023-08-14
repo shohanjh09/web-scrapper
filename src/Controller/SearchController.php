@@ -47,7 +47,7 @@ class SearchController extends AbstractController
         }
 
         return $this->render('company/search.html.twig', [
-            'companies' => $company
+            'pagination' => $company
         ]);
     }
 }

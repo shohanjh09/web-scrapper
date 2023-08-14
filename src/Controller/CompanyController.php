@@ -21,25 +21,29 @@ class CompanyController extends AbstractController
     #[Route('/', name: 'company_index', methods: ['GET', 'POST'])]
     public function index(Request $request, CompanyRepository $companyRepository, PaginatorInterface $paginator): Response
     {
+        $itemsPerPage = $_ENV['ITEMS_PER_PAGE'] ?? 10;
+        $page = $request->query->getInt('page', 1);
+
         $filterForm = $this->createForm(CompanyFilterType::class);
         $filterForm->handleRequest($request);
 
-        $queryBuilder = $companyRepository->createQueryBuilder('c');
+        $queryBuilder = $companyRepository->createQueryBuilder('c')->orderBy('c.id', 'DESC');
 
         // Apply filters if the form is submitted
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
+            $page = 1;
             $data = $filterForm->getData();
             if ($data['search']) {
                 $queryBuilder
-                    ->andWhere('c.company_name LIKE :search OR c.registration_code LIKE :search')
+                    ->andWhere('c.company_name LIKE :search OR c.registration_code LIKE :search OR c.vat LIKE :search')
                     ->setParameter('search', '%' . $data['search'] . '%');
             }
         }
 
         $pagination = $paginator->paginate(
             $queryBuilder->getQuery(),
-            $request->query->getInt('page', 1),
-            1 // Items per page
+            $page,
+            $itemsPerPage
         );
 
         return $this->render('company/index.html.twig', [
