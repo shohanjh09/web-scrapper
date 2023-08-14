@@ -19,3 +19,6 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 puppeteer/scripts/node_modules
+supervisord.log
+supervisord.pid
+tail

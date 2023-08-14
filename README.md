@@ -30,7 +30,8 @@ A web application for searching, scrapping, and managing company information.
 ## Setup Guide
 
 To get the project up and running on your local machine, follow these steps:
-
+1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/)
+   
 1. Clone the repo and `cd` into it:
 ```bash
 git clone https://github.com/shohanjh09/web-scrapper.git

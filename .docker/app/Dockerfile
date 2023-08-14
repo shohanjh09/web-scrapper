@@ -42,6 +42,15 @@ RUN apk add --no-cache rabbitmq-c-dev autoconf g++ make
 RUN pecl install amqp
 RUN docker-php-ext-enable amqp
 
+# Install Supervisor and copy the required file
+RUN apk add --no-cache supervisor
+COPY supervisord.conf /etc/supervisord.conf
+RUN chmod 644 /etc/supervisord.conf
+
 # Set working directory and non-root user
 WORKDIR /var/www/html
+
+# Start Supervisor and php-fpm
+CMD /bin/sh -c "php-fpm -F & /usr/bin/supervisord -c /etc/supervisord.conf"
+
 USER www-data
