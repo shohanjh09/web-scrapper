@@ -7,7 +7,7 @@ ARG PHPIZE_DEPS="autoconf curl g++ gcc libtool make"
 
 # Set environment variables
 ENV PECL_EXTENSIONS="pcov redis"
-ENV PHP_EXTENSIONS="bz2 exif gd gettext intl pcntl pdo_mysql zip"
+ENV PHP_EXTENSIONS="bz2 exif gd gettext intl pcntl pdo_mysql zip bcmath"
 
 # Install system dependencies and linux-headers
 RUN apk add --no-cache --virtual .build-deps \
@@ -34,6 +34,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install Node.js and npm
 RUN apk add --no-cache nodejs npm
+
+# Install required packages for building extensions
+RUN apk add --no-cache rabbitmq-c-dev autoconf g++ make
+
+# Install AMQP extension
+RUN pecl install amqp
+RUN docker-php-ext-enable amqp
 
 # Set working directory and non-root user
 WORKDIR /var/www/html

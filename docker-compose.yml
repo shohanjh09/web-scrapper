@@ -75,6 +75,20 @@ services:
     networks:
       - web-scrapper-network
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: web-scrapper-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - web-scrapper-volume:/var/lib/rabbitmq
+    networks:
+      - web-scrapper-network
+    depends_on:
+      - app
+
 networks:
   web-scrapper-network:
     driver: bridge

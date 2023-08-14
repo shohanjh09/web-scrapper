@@ -10,7 +10,7 @@
 
         <form action="{{ path('company_search') }}" method="get" class="mt-4">
             <div class="input-group mb-3">
-                <input type="text" name="registration_code" class="form-control" placeholder="Provide Registration Code(s) for Scrapping (multiple codes can be added by separating them with commas)">
+                <input type="text" name="registration_codes" class="form-control" placeholder="Provide Registration Code(s) for Scrapping (multiple codes can be added by separating them with commas)">
                 <div class="input-group-append">
                     <button type="submit" class="btn btn-primary">Search</button>
                 </div>
@@ -24,13 +24,56 @@
                 </a>
             </div>
         </div>
+
+        {% if message %}
+            <div class="alert alert-info" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+
         {{ include('company/include/_company_list.html.twig', {'pagination': pagination}) }}
         {{ include('company/include/_turnover_modal.html.twig') }}
     </div>
 {% endblock %}
 
-
-
 {% block customJavascript %}
-    <script src="{{ asset('js/custom.js') }}"></script>
+    {{ parent() }}
+    <script>
+        function checkTaskStatus() {
+            const registrationCodes = "{{ registrationCodes }}"; // Passed from the controller
+            const message = "{{ message }}"; // Passed from the controller
+
+            if (!registrationCodes || message.length === 0) {
+                return; // No registration codes or nothing to check
+            }
+
+            // Send an AJAX request to check the task status
+            $.ajax({
+                url: '{{ path('check_status') }}',
+                method: 'GET',
+                data: { registration_codes: registrationCodes },
+                success: function (response) {
+                    if (response === 'completed') {
+                        // Task is completed, fetch and display the scraped data
+                        fetchAndDisplayData();
+                    } else {
+                        // Task is still in progress, wait and check again
+                        setTimeout(checkTaskStatus, 5000); // Check every 5 seconds
+                    }
+                },
+                error: function () {
+                    // Handle error
+                }
+            });
+        }
+
+        function fetchAndDisplayData() {
+            location.reload(); // Reload the page to display the scraped data
+        }
+
+        // Start checking the task status when the page loads
+        $(document).ready(function () {
+            checkTaskStatus();
+        });
+    </script>
 {% endblock %}

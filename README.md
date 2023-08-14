@@ -63,7 +63,9 @@ php bin/console doctrine:migrations:migrate
 
 7. Visit `http://localhost` or `https://localhost` in your browser
 
-8. Visit `http://localhost:8080` in your browser to access phpMyAdmin
+8. Visit `http://localhost:8080` (username: root, password: 123) in your browser to access phpMyAdmin
+
+9. Visit `http://localhost:15672` (username: guest, password: guest) in your browser to access RabbitMQ
 
 ## Contributing
 

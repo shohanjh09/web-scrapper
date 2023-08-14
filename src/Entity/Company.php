@@ -34,6 +34,9 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyTurnover::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $company_turnover;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $status = null;
+
     public function __construct()
     {
         $this->company_turnover = new ArrayCollection();
@@ -159,5 +162,17 @@ class Company
         }
 
         return $serializedTurnover;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

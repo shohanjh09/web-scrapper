@@ -12,7 +12,7 @@ class ScrappingService
 
     const MOBILE_KEYS = ['mobile_phone', 'phone'];
 
-    const IMG_DIR = "images/";
+    const IMG_DIR = "public/images/";
 
     private $proxyToken;
     /**

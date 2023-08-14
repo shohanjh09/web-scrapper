@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Company>
@@ -16,33 +17,43 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CompanyRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var PaginatorInterface
+     */
+    private $paginator;
+
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator)
     {
         parent::__construct($registry, Company::class);
+
+        $this->paginator = $paginator;
     }
 
-//    /**
-//     * @return Company[] Returns an array of Company objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countStatusByRegistrationCodes(array $registrationCodes): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('c.status, COUNT(c.id) as count')
+            ->andWhere('c.registration_code IN (:registrationCodes)')
+            ->setParameter('registrationCodes', $registrationCodes)
+            ->groupBy('c.status');
 
-//    public function findOneBySomeField($value): ?Company
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $results = $queryBuilder->getQuery()->getResult();
+
+        $statusCounts = [];
+        foreach ($results as $result) {
+            $statusCounts[$result['status']] = $result['count'];
+        }
+
+        return $statusCounts;
+    }
+
+    public function getCompletedCompanyByRegistrationCode(array $registrationCodes, $page, $limit)
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->andWhere("c.registration_code IN (:registrationCodes) AND c.status = 'completed'")
+            ->setParameter('registrationCodes', $registrationCodes)
+            ->orderBy('c.id', 'DESC');
+
+        return $this->paginator->paginate($queryBuilder->getQuery(), $page, $limit);
+    }
 }

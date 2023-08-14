@@ -33,37 +33,70 @@ class CompanyService
         return $this->companyRepository->find($id);
     }
 
-    public function createCompanyWithTurnover(array $data): Company
+    public function removeCompanyByRegistrationCode($registrationCode)
     {
-        // Create a new Company entity and set its properties
-        $company = new Company();
-        $company->setCompanyName($data['company_details']['company_name']);
-        $company->setRegistrationCode($data['company_details']['registration_code']);
-        $company->setVat($data['company_details']['vat']);
-        $company->setAddress($data['company_details']['address']);
-        $company->setMobilePhone($data['company_details']['mobile_phone']);
+        $company = $this->companyRepository->findOneBy(['registration_code' => $registrationCode]);
 
-        // Create and associate CompanyTurnover entities with the Company
-        foreach ($data['company_turnover']['year'] as $index => $year) {
-            $companyTurnover = new CompanyTurnover();
-            $companyTurnover->setYear($year);
-            $companyTurnover->setNonCurrentAssets($data['company_turnover']['non_current_assets'][$index]);
-            $companyTurnover->setCurrentAssets($data['company_turnover']['current_assets'][$index]);
-            $companyTurnover->setEquityCapital($data['company_turnover']['equity_capital'][$index]);
-            $companyTurnover->setAmountsPayableAndOtherLiabilities($data['company_turnover']['amounts_payable_and_other_liabilities'][$index]);
-            $companyTurnover->setSalesRevenue($data['company_turnover']['sales_revenue'][$index]);
-            $companyTurnover->setProfitLossBeforeTaxes($data['company_turnover']['profit_loss_before_taxes'][$index]);
-            $companyTurnover->setProfitBeforeTaxesMargin($data['company_turnover']['profit_before_taxes_margin'][$index]);
-            $companyTurnover->setNetProfitLoss($data['company_turnover']['net_profit_loss'][$index]);
-            $companyTurnover->setNetProfitMargin($data['company_turnover']['net_profit_margin'][$index]);
-
-            $company->addCompanyTurnover($companyTurnover);
+        if ($company) {
+            $this->entityManager->remove($company);
+            $this->entityManager->flush();
         }
+    }
+
+    public function countStatusByRegistrationCodes(array $registrationCodes){
+        return $this->companyRepository->countStatusByRegistrationCodes($registrationCodes);
+    }
+
+    public function getActiveCompanyByRegistrationCode(array $registrationCodes, $page, $limit){
+        return $this->companyRepository->getCompletedCompanyByRegistrationCode($registrationCodes, $page, $limit);
+    }
+
+    public function createOrUpdateCompanyAndTurnoverInformation(array $scrapedData): void
+    {
+        // Update Company entity and set its properties with scrapping information
+        $registrationCode = $scrapedData['company_details']['registration_code'];
+
+        $company = $this->companyRepository->findOneBy(['registration_code' => $registrationCode]);
+
+        if (!$company) {
+            // Create a new Company entity if not found
+            $company = new Company();
+            $company->setRegistrationCode($registrationCode);
+        }
+
+        $this->updateCompanyFromScrapedData($company, $scrapedData['company_details']);
+        $this->updateTurnoversFromScrapedData($company, $scrapedData['company_turnover']);
 
         // Persist the Company entity and its associated CompanyTurnover entities
         $this->entityManager->persist($company);
         $this->entityManager->flush();
+    }
 
-        return $company;
+    private function updateCompanyFromScrapedData(Company $company, array $scrapedCompanyData): void
+    {
+        $company->setStatus('completed');
+        $company->setCompanyName($scrapedCompanyData['company_name']);
+        $company->setVat($scrapedCompanyData['vat']);
+        $company->setAddress($scrapedCompanyData['address']);
+        $company->setMobilePhone($scrapedCompanyData['mobile_phone']);
+    }
+
+    private function updateTurnoversFromScrapedData(Company $company, array $scrapedTurnoverData): void
+    {
+        foreach ($scrapedTurnoverData['year'] as $index => $year) {
+            $companyTurnover = new CompanyTurnover();
+            $companyTurnover->setYear($year);
+            $companyTurnover->setNonCurrentAssets($scrapedTurnoverData['non_current_assets'][$index]);
+            $companyTurnover->setCurrentAssets($scrapedTurnoverData['current_assets'][$index]);
+            $companyTurnover->setEquityCapital($scrapedTurnoverData['equity_capital'][$index]);
+            $companyTurnover->setAmountsPayableAndOtherLiabilities($scrapedTurnoverData['amounts_payable_and_other_liabilities'][$index]);
+            $companyTurnover->setSalesRevenue($scrapedTurnoverData['sales_revenue'][$index]);
+            $companyTurnover->setProfitLossBeforeTaxes($scrapedTurnoverData['profit_loss_before_taxes'][$index]);
+            $companyTurnover->setProfitBeforeTaxesMargin($scrapedTurnoverData['profit_before_taxes_margin'][$index]);
+            $companyTurnover->setNetProfitLoss($scrapedTurnoverData['net_profit_loss'][$index]);
+            $companyTurnover->setNetProfitMargin($scrapedTurnoverData['net_profit_margin'][$index]);
+
+            $company->addCompanyTurnover($companyTurnover);
+        }
     }
 }
