@@ -12,13 +12,14 @@ class CompanyControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private CompanyRepository $repository;
-    private string $path = '/company/';
+    private string $path = '/';
     private EntityManagerInterface $manager;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get('doctrine')->getRepository(Company::class);
+        $this->manager = static::getContainer()->get(EntityManagerInterface::class);
 
         foreach ($this->repository->findAll() as $object) {
             $this->manager->remove($object);
@@ -27,20 +28,16 @@ class CompanyControllerTest extends WebTestCase
 
     public function testIndex(): void
     {
-        $crawler = $this->client->request('GET', $this->path);
+        $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Company index');
-
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
+        self::assertPageTitleContains('Company Database');
     }
 
     public function testNew(): void
     {
-        $originalNumObjectsInRepository = count($this->repository->findAll());
+        $companyCount = count($this->repository->findAll());
 
-        $this->markTestIncomplete();
         $this->client->request('GET', sprintf('%snew', $this->path));
 
         self::assertResponseStatusCodeSame(200);
@@ -53,46 +50,24 @@ class CompanyControllerTest extends WebTestCase
             'company[mobile_phone]' => 'Testing',
         ]);
 
-        self::assertResponseRedirects('/company/');
+        self::assertResponseRedirects('/');
 
-        self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
-    }
-
-    public function testShow(): void
-    {
-        $this->markTestIncomplete();
-        $fixture = new Company();
-        $fixture->setCompany_name('My Title');
-        $fixture->setRegistration_code('My Title');
-        $fixture->setVat('My Title');
-        $fixture->setAddress('My Title');
-        $fixture->setMobile_phone('My Title');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
-
-        self::assertResponseStatusCodeSame(200);
-        self::assertPageTitleContains('Company');
-
-        // Use assertions to check that the properties are properly displayed.
+        self::assertSame($companyCount + 1, count($this->repository->findAll()));
     }
 
     public function testEdit(): void
     {
-        $this->markTestIncomplete();
-        $fixture = new Company();
-        $fixture->setCompany_name('My Title');
-        $fixture->setRegistration_code('My Title');
-        $fixture->setVat('My Title');
-        $fixture->setAddress('My Title');
-        $fixture->setMobile_phone('My Title');
+        $company = new Company();
+        $company->setCompanyName('My Title');
+        $company->setRegistrationCode('My Title');
+        $company->setVat('My Title');
+        $company->setAddress('My Title');
+        $company->setMobilePhone('My Title');
 
-        $this->manager->persist($fixture);
+        $this->manager->persist($company);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $company->getId()));
 
         $this->client->submitForm('Update', [
             'company[company_name]' => 'Something New',
@@ -102,39 +77,48 @@ class CompanyControllerTest extends WebTestCase
             'company[mobile_phone]' => 'Something New',
         ]);
 
-        self::assertResponseRedirects('/company/');
+        self::assertResponseRedirects('/');
 
-        $fixture = $this->repository->findAll();
+        $company = $this->repository->findAll();
 
-        self::assertSame('Something New', $fixture[0]->getCompany_name());
-        self::assertSame('Something New', $fixture[0]->getRegistration_code());
-        self::assertSame('Something New', $fixture[0]->getVat());
-        self::assertSame('Something New', $fixture[0]->getAddress());
-        self::assertSame('Something New', $fixture[0]->getMobile_phone());
+        self::assertSame('Something New', $company[0]->getCompanyName());
+        self::assertSame('Something New', $company[0]->getRegistrationCode());
+        self::assertSame('Something New', $company[0]->getVat());
+        self::assertSame('Something New', $company[0]->getAddress());
+        self::assertSame('Something New', $company[0]->getMobilePhone());
     }
 
     public function testRemove(): void
     {
-        $this->markTestIncomplete();
+        $companyCount = count($this->repository->findAll());
 
-        $originalNumObjectsInRepository = count($this->repository->findAll());
+        $company = new Company();
+        $company->setCompanyName('My Title');
+        $company->setRegistrationCode('My Title');
+        $company->setVat('My Title');
+        $company->setAddress('My Title');
+        $company->setMobilePhone('My Title');
 
-        $fixture = new Company();
-        $fixture->setCompany_name('My Title');
-        $fixture->setRegistration_code('My Title');
-        $fixture->setVat('My Title');
-        $fixture->setAddress('My Title');
-        $fixture->setMobile_phone('My Title');
-
-        $this->manager->persist($fixture);
+        $this->manager->persist($company);
         $this->manager->flush();
 
-        self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
+        self::assertSame($companyCount + 1, count($this->repository->findAll()));
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $company->getId()));
         $this->client->submitForm('Delete');
 
-        self::assertSame($originalNumObjectsInRepository, count($this->repository->findAll()));
-        self::assertResponseRedirects('/company/');
+        self::assertSame($companyCount, count($this->repository->findAll()));
+        self::assertResponseRedirects('/');
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        foreach ($this->repository->findAll() as $object) {
+            $this->manager->remove($object);
+        }
+
+        $this->manager->flush();
     }
 }

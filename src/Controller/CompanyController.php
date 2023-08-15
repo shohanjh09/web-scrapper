@@ -27,7 +27,7 @@ class CompanyController extends AbstractController
         $filterForm = $this->createForm(CompanyFilterType::class);
         $filterForm->handleRequest($request);
 
-        $queryBuilder = $companyRepository->createQueryBuilder('c')->orderBy('c.id', 'DESC');
+        $queryBuilder = $companyRepository->createQueryBuilder('c')->andWhere("c.status = 'completed'")->orderBy('c.id', 'DESC');
 
         // Apply filters if the form is submitted
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {

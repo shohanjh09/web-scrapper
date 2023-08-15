@@ -34,8 +34,8 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: CompanyTurnover::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $company_turnover;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $status = null;
+    #[ORM\Column(length:100, nullable:true, options: ["default" => 'completed'])]
+    private ?string $status = 'completed';
 
     public function __construct()
     {
