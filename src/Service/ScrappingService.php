@@ -48,17 +48,23 @@ class ScrappingService
     public function searchCompany($url, $data){
         $response = $this->makeApiRequest($url, $data, 'POST');
 
-        $companyUrl =  $this->extractCompanyUrl($response);
+        $companyUrls = $this->extractCompanyUrl($response);
 
-        $companyDetails =  $this->getCompanyDetails($companyUrl);
+        $scrapedData = [];
 
-        $companyTurnover = $this->getCompanyTurnover($companyUrl."turnover");
+        foreach ($companyUrls as $companyUrl){
+            $companyDetails = $this->getCompanyDetails($companyUrl);
+            $companyTurnover = $this->getCompanyTurnover($companyUrl . "turnover");
 
-        return [
-            'company_details' => $companyDetails,
-            'company_turnover' => $companyTurnover
-        ];
+            $scrapedData[] = [
+                'company_details' => $companyDetails,
+                'company_turnover' => $companyTurnover
+            ];
+        }
+
+        return $scrapedData;
     }
+
 
     /**
      * Get company details from the provided URL.
@@ -197,15 +203,15 @@ class ScrappingService
      * Extract company URL
      *
      * @param $html
-     * @return string
+     * @return array
      */
     private function extractCompanyUrl($html)
     {
         $crawler = new Crawler($html);
-        $companyUrl = "";
+        $companyUrl = [];
 
         $crawler->filter('.company-title.d-block')->each(function (Crawler $node) use (&$companyUrl) {
-            $companyUrl = $node->attr('href');
+            $companyUrl[] = $node->attr('href');
         });
 
         return $companyUrl;

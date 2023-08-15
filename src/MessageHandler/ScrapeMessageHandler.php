@@ -19,8 +19,10 @@ class ScrapeMessageHandler
         $this->companyService = $companyService;
     }
 
+
     public function __invoke(ScrapeMessage $message)
     {
+        // Get the registration code from the message
         $registrationCode = $message->getRegistrationCode();
 
         $url = $_ENV['SCRAPPING_BASE_URL'] . "/en/company-search/1/";
@@ -31,14 +33,18 @@ class ScrapeMessageHandler
             'resetFilter' => '0',
         ];
 
-        // Perform scraping for the registration code
-        $scrapedData = $this->scrappingService->searchCompany($url, $data);
+        $scrapedDatas = $this->scrappingService->searchCompany($url, $data);
 
-        if (!empty($scrapedData['company_details'])) {
+        if (!empty($scrapedDatas)) {
+            $totalScraped = count($scrapedDatas);
+
             // Save the scraped data to the database
-            $this->companyService->createOrUpdateCompanyAndTurnoverInformation($scrapedData);
+            foreach ($scrapedDatas as $key => $scrapedData) {
+                $isLastScraped = $key === $totalScraped - 1;
+                $this->companyService->createOrUpdateCompanyAndTurnoverInformation($scrapedData, $isLastScraped);
+            }
         } else {
-            // Remove the entry from database which was used to tracking the scrapping
+            // If no data scraped, remove the tracking entry from the database
             $this->companyService->removeCompanyByRegistrationCode($registrationCode);
         }
 

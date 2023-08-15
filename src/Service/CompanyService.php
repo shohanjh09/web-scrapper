@@ -82,14 +82,14 @@ class CompanyService
      *
      * @param array $scrapedData
      */
-    public function createOrUpdateCompanyAndTurnoverInformation(array $scrapedData): void
+    public function createOrUpdateCompanyAndTurnoverInformation(array $scrapedData, $lastIndex = true): void
     {
         // Update Company entity and set its properties with scrapping information
         $registrationCode = $scrapedData['company_details']['registration_code'];
 
-        $company = $this->companyRepository->findOneBy(['registration_code' => $registrationCode]);
+        $company = $this->companyRepository->findOneBy(['registration_code' => $registrationCode], ['id' => 'ASC']);
 
-        if (!$company) {
+        if (!$lastIndex) {
             // Create a new Company entity if not found
             $company = new Company();
             $company->setRegistrationCode($registrationCode);
