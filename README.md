@@ -8,6 +8,7 @@ This project entails the development of a comprehensive Dockerized stack, integr
 - [Setup Guide](#setup-guide)
 - [Test Run Instruction](#test-run-instruction)
 - [Video Tutorial](#video-tutorial)
+- [Scope for Improvement](#scope-for-improvement)
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [License](#license)
@@ -62,8 +63,8 @@ docker-compose exec app sh
 ```bash
 composer install
 ```
-- Create the database schema inside the application container:
 
+- create column and table in database by running the command inside the application container:
 ```bash
 php bin/console doctrine:migrations:migrate
 ```
@@ -105,8 +106,15 @@ php bin/phpunit
 
 ## Video Tutorial
 - Application feature demonstration: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
-- Project setup: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
-- Test Run: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
+- Project setup: [Video Link](https://drive.google.com/file/d/13mWPxTH5nDLMPgjHj5Q0tRFpfhGAP7DA/view?usp=sharing)
+- Test Run: [Video Link](https://drive.google.com/file/d/108KMGy48aFn2ex4YJcM9zJbQbApFweEw/view?usp=sharing)
+
+## Scope for Improvement:
+As a result of time constraints, not all aspects could be addressed. Nevertheless, the potential areas for enhancement include:
+- Expanding the test suite, particularly focusing on the scraping services.
+- Extending CRUD functionality to cover turnover information as well.
+- Enhancing the overall UI/UX for a more user-friendly experience.
+- Implementing a Login feature to restrict CRUD operations to authorized users only.
 
 ## Contributing
 Contributions are welcome! If you find any bugs or want to enhance the functionality, feel free to submit pull requests or issues.
