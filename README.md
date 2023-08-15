@@ -1,75 +1,114 @@
-# Company Search Web Application (Scrapping)
+# Dockerized Company Data Scraper with Symfony 6.2
 
-A web application for searching, scrapping, and managing company information.
+This project entails the development of a comprehensive Dockerized stack, integrating Nginx, PHP 8.2, MySQL 8, RabbitMQ, and Redis. Leveraging Symfony 6.2 framework, the primary objective is to create a robust web scraper capable of extracting essential company information from https://rekvizitai.vz.lt/en/company-search/. This information encompasses crucial details such as Company Name, Registration Code, VAT, Address, and Mobile Phone. Moreover, the scraper will also extract turnover information from the "XXX turnover for the year" table on the company profile page.
 
 ## Table of Contents
 - [Functional Descriptions](#functional-descriptions)
 - [Technologies Used](#technologies-used)
 - [Setup Guide](#setup-guide)
+- [Test Run Instruction](#test-run-instruction)
+- [Video Tutorial](#video-tutorial)
+- [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Functional Descriptions
-
-- **Company Search:** Allows users to search for company information using the company's registration code. Firstly, it tries to find in the database; otherwise, it scrapes data from the following URL: https://rekvizitai.vz.lt
-- **Company Display:** Displays detailed information about a company, including name, registration code, VAT, address, and more.
-- **Company Creation:** Users can create new company records by entering the required details.
-- **Company Editing:** Users can edit existing company records to update their information.
-- **Company Deletion:** Allows users to delete company records after confirming the action.
-- **Company Turnover:** Displays turnover information for companies, including financial details for specific years.
+- **Dockerized Stack:** The project utilizes Docker to create a seamless and portable environment, ensuring consistent deployment across different systems.
+- **Symfony 6.2 Framework:** Symfony, renowned for its versatility and rapid development capabilities, is employed as the core framework to implement the company data scraper and the associated web application. 
+- **Data Extraction and Scraper:** The custom-built scraper will automatically retrieve the specified information from the company profiles on the provided website. This includes Company Name, Registration Code, VAT, Address, Mobile Phone, and Turnover details.
+- **Search Bar with Registration Code:** The user-friendly interface will feature a search bar that accepts a registration code as input. Upon entering the registration code, users can initiate the scraping process to retrieve the necessary company information.
+- **CRUD Functionality:** The scraped company data can be easily managed through the application's CRUD (Create, Read, Update, Delete) functionalities. This ensures effortless manipulation of stored data.
+- **Filtering and Pagination:** The application incorporates advanced filtering options, enabling users to refine data based on specific criteria. Additionally, pagination enhances the accessibility of large datasets.
+- **Multi-Code Search Capability:** As an added convenience, the search bar is equipped to handle multiple registration codes, which can be inputted by comma(,) separation and processed simultaneously.
+- **RabbitMQ Integration:** The project employs RabbitMQ to efficiently manage and distribute queries within the scraper. This enhances performance and optimizes resource allocation.
 
 ## Technologies Used
+- Nginx
+- PHP 8.2
+- MySQL 8
+- RabbitMQ
+- Redis
+- Symfony 6.2
 
-- Symfony: A PHP web application framework.
-- Bootstrap: A CSS framework for responsive and user-friendly designs.
-- Font Awesome: A library for adding icons to your application.
-- KnpPaginatorBundle: A bundle for adding pagination to lists of data.
-- jQuery: A JavaScript library for interactivity and AJAX requests.
-- Dockerized stack consisting of Nginx, PHP 8.2, MySQL 8, RabbitMQ, and Redis
+
 
 ## Setup Guide
-
 To get the project up and running on your local machine, follow these steps:
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/)
-   
-1. Clone the repo and `cd` into it:
+
+- **Prerequisite:** If not already done, [install Docker Compose](https://docs.docker.com/compose/install/)
+
+- Clone the repo and navigate into it:
 ```bash
 git clone https://github.com/shohanjh09/web-scrapper.git
 cd web-scrapper
 ```
-2. Rename or copy `.env.test` file to `.env`
-   
-3. Build and start the Docker containers:
+- Rename or copy `.env.dist` file to `.env`
+- Update the SCRAPPING_PROXY_TOKEN in the .env file. Get the token from the following URL (details in project setup video):
+  https://dashboard.scrape.do/login
+
+- Build and start the Docker containers:
 ```bash
 docker-compose up --build -d
 ```
 
-4. Access the application container:
+- Access the application container:
 
 ```bash
 docker-compose exec app sh
 ```
 
-5. Install the required dependencies inside the container:
+- Install the required dependencies inside the application container:
 
 ```bash
 composer install
 ```
-
-6. Create the database schema inside the container:
+- Create the database schema inside the application container:
 
 ```bash
 php bin/console doctrine:migrations:migrate
 ```
 
-7. Visit `http://localhost` or `https://localhost` in your browser
+- Visit `https://localhost` or `http://localhost` in your browser
+- Visit `http://localhost:8080` (username: root, password: 123) in your browser to access phpMyAdmin
+- Visit `http://localhost:15672` (username: guest, password: guest) in your browser to access RabbitMQ
 
-8. Visit `http://localhost:8080` (username: root, password: 123) in your browser to access phpMyAdmin
+## Test run instruction:
+- Ensure Docker containers are built and started:
+```bash
+docker-compose up --build -d
+```
 
-9. Visit `http://localhost:15672` (username: guest, password: guest) in your browser to access RabbitMQ
+- Access the application container:
+
+```bash
+docker-compose exec app sh
+```
+
+- Create the test database in the application container:
+```bash
+php bin/console --env=test doctrine:database:create
+```
+- create column and table in the test database in the application container
+```bash
+php bin/console --env=test doctrine:schema:create
+```
+Run the tests in the application container (details in Test Run video):
+```bash
+php bin/phpunit
+```
+
+## Screenshots
+![Screenshot](./public/images/home.png)
+![Screenshot](./public/images/search.png)
+![Screenshot](./public/images/search_result.png)
+![Screenshot](./public/images/rabbitMQ.png)
+
+## Video Tutorial
+- Application feature demonstration: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
+- Project setup: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
+- Test Run: [Video Link](https://drive.google.com/file/d/1Fj00ylF6h8xg1V7l8xyMRD8MKsKqX5PU/view?usp=sharing)
 
 ## Contributing
-
 Contributions are welcome! If you find any bugs or want to enhance the functionality, feel free to submit pull requests or issues.
 
 ## License
