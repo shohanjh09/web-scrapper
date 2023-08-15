@@ -40,7 +40,6 @@ class CompanyRepositoryTest extends KernelTestCase
 
     public function testCountStatusByRegistrationCodes()
     {
-        /** @var CompanyRepository $companyRepository */
         $companyRepository = $this->entityManager->getRepository(Company::class);
 
         $registrationCodes = ['ABC123', 'DEF456'];
@@ -60,7 +59,6 @@ class CompanyRepositoryTest extends KernelTestCase
 
     public function testGetCompletedCompanyByRegistrationCode()
     {
-        /** @var CompanyRepository $companyRepository */
         $companyRepository = $this->entityManager->getRepository(Company::class);
 
         $registrationCodes = ['ABC123', 'DEF456'];

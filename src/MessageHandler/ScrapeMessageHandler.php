@@ -10,8 +10,6 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class ScrapeMessageHandler
 {
-    const WEB_URL = "https://rekvizitai.vz.lt/en";
-
     private $scrappingService;
     private $companyService;
 
@@ -25,7 +23,7 @@ class ScrapeMessageHandler
     {
         $registrationCode = $message->getRegistrationCode();
 
-        $url = self::WEB_URL . "/company-search/1/";
+        $url = $_ENV['SCRAPPING_BASE_URL'] . "/company-search/1/";
 
         $data = [
             'code'        => $registrationCode,
@@ -40,6 +38,7 @@ class ScrapeMessageHandler
             // Save the scraped data to the database
             $this->companyService->createOrUpdateCompanyAndTurnoverInformation($scrapedData);
         } else {
+            // Remove the entry from database which was used to tracking the scrapping
             $this->companyService->removeCompanyByRegistrationCode($registrationCode);
         }
 

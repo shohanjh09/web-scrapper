@@ -14,7 +14,7 @@ class CompanyFilterType extends AbstractType
         $builder
             ->add('search', TextType::class, [
                 'required' => false,
-                'attr' => ['placeholder' => 'Search by company name or registration code'],
+                'attr' => ['placeholder' => 'Search by company name or code or vat'],
             ])
             ->add('filter', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-primary input-group-append'],

@@ -29,6 +29,12 @@ class CompanyRepository extends ServiceEntityRepository
         $this->paginator = $paginator;
     }
 
+    /**
+     * Count the number of in_progress and completed company for a list of registration codes
+     *
+     * @param array $registrationCodes
+     * @return array
+     */
     public function countStatusByRegistrationCodes(array $registrationCodes): array
     {
         $queryBuilder = $this->createQueryBuilder('c')
@@ -47,6 +53,14 @@ class CompanyRepository extends ServiceEntityRepository
         return $statusCounts;
     }
 
+    /**
+     * Get a list of completed company for a list of registration codes
+     *
+     * @param array $registrationCodes
+     * @param $page
+     * @param $limit
+     * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     */
     public function getCompletedCompanyByRegistrationCode(array $registrationCodes, $page, $limit)
     {
         $queryBuilder = $this->createQueryBuilder('c')

@@ -40,11 +40,13 @@
     {{ parent() }}
     <script>
         function checkTaskStatus() {
-            const registrationCodes = "{{ registrationCodes }}"; // Passed from the controller
-            const message = "{{ message }}"; // Passed from the controller
+            // Passed from the controller
+            const registrationCodes = "{{ registrationCodes }}";
+            const message = "{{ message }}";
 
+            // No registration codes or nothing to check
             if (!registrationCodes || message.length === 0) {
-                return; // No registration codes or nothing to check
+                return;
             }
 
             // Send an AJAX request to check the task status
@@ -55,20 +57,13 @@
                 success: function (response) {
                     if (response === 'completed') {
                         // Task is completed, fetch and display the scraped data
-                        fetchAndDisplayData();
+                        location.reload();
                     } else {
-                        // Task is still in progress, wait and check again
-                        setTimeout(checkTaskStatus, 5000); // Check every 5 seconds
+                        // Task is still in progress, wait and check again in every 5 seconds
+                        setTimeout(checkTaskStatus, 5000);
                     }
-                },
-                error: function () {
-                    // Handle error
                 }
             });
-        }
-
-        function fetchAndDisplayData() {
-            location.reload(); // Reload the page to display the scraped data
         }
 
         // Start checking the task status when the page loads

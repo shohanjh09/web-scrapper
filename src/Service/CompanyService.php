@@ -18,21 +18,33 @@ class CompanyService
         $this->companyRepository = $companyRepository;
     }
 
+    /**
+     * Get list of company for a specific criteria in descending order
+     *
+     * @param array $criteria
+     * @return array
+     */
     public function findCompanyByCriteria(array $criteria): array
     {
         return $this->companyRepository->findBy($criteria, ['id' => 'DESC']);
     }
 
-    public function findCompanyAll(): array
-    {
-        return $this->companyRepository->findBy([], ['id' => 'DESC']);
-    }
-
+    /**
+     * Get company information by id
+     *
+     * @param $id
+     * @return Company|null
+     */
     public function findCompanyById($id)
     {
         return $this->companyRepository->find($id);
     }
 
+    /**
+     * remove company for a registration code
+     *
+     * @param $registrationCode
+     */
     public function removeCompanyByRegistrationCode($registrationCode)
     {
         $company = $this->companyRepository->findOneBy(['registration_code' => $registrationCode]);
@@ -43,14 +55,33 @@ class CompanyService
         }
     }
 
+    /**
+     * Count the number of in_progress and completed company for a list of registration codes
+     *
+     * @param array $registrationCodes
+     * @return array
+     */
     public function countStatusByRegistrationCodes(array $registrationCodes){
         return $this->companyRepository->countStatusByRegistrationCodes($registrationCodes);
     }
 
+    /**
+     * Get a list of completed company for a list of registration codes
+     *
+     * @param array $registrationCodes
+     * @param $page
+     * @param $limit
+     * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     */
     public function getActiveCompanyByRegistrationCode(array $registrationCodes, $page, $limit){
         return $this->companyRepository->getCompletedCompanyByRegistrationCode($registrationCodes, $page, $limit);
     }
 
+    /**
+     * Create or update company information using scrapped data
+     *
+     * @param array $scrapedData
+     */
     public function createOrUpdateCompanyAndTurnoverInformation(array $scrapedData): void
     {
         // Update Company entity and set its properties with scrapping information
@@ -72,6 +103,12 @@ class CompanyService
         $this->entityManager->flush();
     }
 
+    /**
+     * Update company information using scrapped data
+     *
+     * @param Company $company
+     * @param array $scrapedCompanyData
+     */
     private function updateCompanyFromScrapedData(Company $company, array $scrapedCompanyData): void
     {
         $company->setStatus('completed');
@@ -81,6 +118,12 @@ class CompanyService
         $company->setMobilePhone($scrapedCompanyData['mobile_phone']);
     }
 
+    /**
+     * Update company turnover information using scrapped data
+     *
+     * @param Company $company
+     * @param array $scrapedTurnoverData
+     */
     private function updateTurnoversFromScrapedData(Company $company, array $scrapedTurnoverData): void
     {
         foreach ($scrapedTurnoverData['year'] as $index => $year) {

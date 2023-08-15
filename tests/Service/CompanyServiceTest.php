@@ -60,19 +60,6 @@ class CompanyServiceTest extends TestCase
         $this->assertEquals([], $result);
     }
 
-    public function testFindCompanyAll()
-    {
-        $this->companyRepositoryMock
-            ->expects($this->once())
-            ->method('findBy')
-            ->with([], ['id' => 'DESC'])
-            ->willReturn([]);
-
-        $result = $this->companyService->findCompanyAll();
-
-        $this->assertEquals([], $result);
-    }
-
     public function testFindCompanyById()
     {
         $companyId = 1;

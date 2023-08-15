@@ -117,6 +117,12 @@ class ScrappingService
         return $turnoverData;
     }
 
+    /**
+     * Extract the company name using crawler
+     *
+     * @param Crawler $crawler
+     * @param array $scrapedData
+     */
     private function extractCompanyName(Crawler $crawler, array &$scrapedData)
     {
         $companyName = $crawler->filter('.top-title h2')->text();

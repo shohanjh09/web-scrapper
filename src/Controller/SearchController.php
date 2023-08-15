@@ -46,7 +46,7 @@ class SearchController extends AbstractController
                         $scrapeMessage = new ScrapeMessage($registrationCode);
                         $messageBus->dispatch($scrapeMessage);
 
-                        $message = 'Scraping task is being processed. Please wait for the results.';
+                        $message = 'Scraping task is being processed. Results will display automatically after processing.';
                     }
                 }
 
@@ -71,6 +71,12 @@ class SearchController extends AbstractController
         return new JsonResponse($status);
     }
 
+    /**
+     * Check the number of in_progress and completed company in the database for list of registration codes
+     * @param CompanyService $companyService
+     * @param string $registrationCodes
+     * @return string
+     */
     private function checkStatusInDatabase(CompanyService $companyService, string $registrationCodes): string
     {
         $registrationCodesArray = explode(',', $registrationCodes);
