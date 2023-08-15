@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block customJavascript %}
-    {{ parent() }}
+    <script src="{{ asset('js/custom.js') }}"></script>
     <script>
         function checkTaskStatus() {
             // Passed from the controller

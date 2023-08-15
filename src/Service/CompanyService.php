@@ -113,9 +113,9 @@ class CompanyService
     {
         $company->setStatus('completed');
         $company->setCompanyName($scrapedCompanyData['company_name']);
-        $company->setVat($scrapedCompanyData['vat']);
-        $company->setAddress($scrapedCompanyData['address']);
-        $company->setMobilePhone($scrapedCompanyData['mobile_phone']);
+        $company->setVat(isset($scrapedCompanyData['vat']) ? $scrapedCompanyData['vat'] : '');
+        $company->setAddress(isset($scrapedCompanyData['address']) ? $scrapedCompanyData['address'] : '');
+        $company->setMobilePhone(isset($scrapedCompanyData['mobile_phone']) ? $scrapedCompanyData['mobile_phone'] : '');
     }
 
     /**

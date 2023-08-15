@@ -52,7 +52,7 @@ class ScrappingService
 
         $companyDetails =  $this->getCompanyDetails($companyUrl);
 
-        $companyTurnover = $this->getCompanyTurnover($companyUrl."/turnover");
+        $companyTurnover = $this->getCompanyTurnover($companyUrl."turnover");
 
         return [
             'company_details' => $companyDetails,

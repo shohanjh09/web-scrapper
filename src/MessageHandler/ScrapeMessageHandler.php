@@ -23,7 +23,7 @@ class ScrapeMessageHandler
     {
         $registrationCode = $message->getRegistrationCode();
 
-        $url = $_ENV['SCRAPPING_BASE_URL'] . "/company-search/1/";
+        $url = $_ENV['SCRAPPING_BASE_URL'] . "/en/company-search/1/";
 
         $data = [
             'code'        => $registrationCode,
